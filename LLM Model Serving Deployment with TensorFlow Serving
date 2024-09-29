@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-serving
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: llm-serving
+  template:
+    metadata:
+      labels:
+        app: llm-serving
+    spec:
+      containers:
+      - name: tf-serving
+        image: tensorflow/serving:latest-gpu
+        ports:
+        - containerPort: 8501
+        env:
+        - name: MODEL_NAME
+          value: "my-llm-model"
+        - name: MODEL_BASE_PATH
+          value: "s3://my-model-bucket/path-to-model" # Update with your model path
+        resources:
+          limits:
+            nvidia.com/gpu: 1 
+
+kubectl apply -f llm-deployment.yaml
+
